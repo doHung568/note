@@ -1,0 +1,101 @@
+- tham số vs đối số
+	+ Tham số (parameter) là biến được khai báo 
+	+ Đối số (argument) là giá trị truyền vào
+
+- Composite key cho bảng trung gian
++ Nếu juction table sử dụng khoá chính bằng cách kết hợp 2 khoá ngoại đến từ 2 bảng được (table A, table B) join:
+	+ Phải sử dụng 1 object (chứa FkA và FkB) để làm ID.
+		+ Object này thực tế là 1 class chứa 2 field là 2 Fk đến từ 2 bảng cần join
+			+ Class này phải được đánh dấu là @Embeddable (cho phép nhúng)
+			+ Tên các field và name của @Column có thể đặt tuỳ thích (tuy nhiên khi map sang class Entity trung gian thì cần phải lưu ý)
+	+ Class Entity cho table trung gian
+		+ Sử dụng @EmbeddedId cho field được khai báo với dataType là Object làm Id bên trên
+			+ Khi khai báo như thế, JPA sẽ hiểu rằng: Id của table này sẽ là sự kết hợp từ id.fieldA + id.fieldB (truy cập field thông qua object id)
+		+ Sử dụng @MapId
+			+ Giá trị trong @MapId("###") sẽ phải giống hệt với field trong Object được sử dụng làm Id tương ứng
+				+ JPA sẽ hiểu rằng: id.fieldA sẽ là giá trị của biến mà đang được sử dụng @MapId("fieldA")
+				tức là: x.getId() sẽ được gán giá trị cho biến id.fieldA
+		+ Sử dụng @JoinColumn
+			+ Giá trị trong @JoinColumn("###") sẽ là tên cột mà field được khai báo sử dụng để ghi giá trị 
+			+ Nên để giá trị ### này giống với giá trị trong @Column mà Object được khai báo vì chúng đều sử dụng chung 1 giá trị
+			+ Nếu không có @JoinColumn thì JPA sẽ tự động sinh ra tên cho cột cho field được khai báo bên bảng trung gian này sử dụng
+			có thể nó giống với tên cột tương ứng mà bên Object đang được sử dụng hoặc tên khác => rủi ro không đồng bộ
+
+- Instant vs LocalDateTime
+	+ Instant: chỉ 1 thời điểm xác định xảy ra hành động, nó không quan tâm tới UTC, nó lưu ngày giờ của chuẩn hệ thống (UTC) và có thể convert để hiển thị phù hợp với các UTC khác nhau.
+		   Nó sẽ lưu thời điểm được tính theo UTC chuẩn (tức là UTC 0), ví dụ nếu đang ở UTC +7 thì Instant sẽ lưu thời gian trừ đi 7 tiếng để về với UTC 0
+	+ LocalDateTime: bị phụ thuộc vào timezone tức là nó sẽ lưu thời gian đúng như hiện tại nhưng nhược điểm là sẽ không thể biết thời gian này đang lưu ở vùng UTC nào
+
+- Exception nên tách thành 2 folder:
+	+ custom: nơi định nghĩa lỗi
+	+ handler: nơi xử lý lỗi, biến lỗi thành response api
+
+- Generic Type: <T>
+	+ T là viết tắt của Type (đương nhiên là có thể đổi bằng bất kì chữ nào)
+	+ chưa biết kiểu dữ liệu, sẽ quyết định sau
+	+ nếu không dùng <T> thì có thể dùng Object để thay thế, tuy nhiên khi dùng Object sẽ không an toàn bằng dùng Generic Type
+	  bởi vì: khi dùng Object, có thể dữ liệu trả về không đúng với loại mong muốn nhưng chương trình không đưa ra cảnh báo nào
+	  còn khi dùng <T>, lúc trả về dữ liệu, chúng ta đã phải chỉ ra rằng phải trả về loại dữ liệu nào, nếu không khớp -> CẢNH BÁO SỚM
+
+- Generic method: 
+	+ khi method là STATIC muốn sử dụng Generic Type thì bắt buộc phải khai báo. Ví dụ: public static <T> Response<T> success(T data){}
+		+ <T> ở vị trí đầu tiên mang ý nghĩa giống như việc khai báo biến để có thể sử dụng phía sau
+		+ <T> ở vị trí thứ 2 và 3 là những nơi mà <T> được sử dụng
+	+ method không phải static thì không cần khai báo <T> vì lúc này nó sẽ sử dụng <T> của class
+
+        * bản chất của sự khác nhau trên là do <T> khi khai báo trên class là biến thuộc về đối tượng
+	  tức là khi tạo ra 1 đối tượng (object) thuộc về class đó, thì đối tượng đó đã biết được kiểu dữ liệu của mình là gì 
+	  nên khi dùng các method (non-static) thì nó sẽ không cần phải khai báo lại kiểu dữ liệu cần dùng là gì
+	* trong khi method static có thể chạy mà không cần khai báo object trước đó, vậy nên sẽ cần phải khai báo kiểu dữ liệu cho các method static này
+
+	! thực tế, khi 1 object được khai báo, nó sẽ có thể gọi tới cả method non-static và static, bởi vì khi gọi method non-static thông qua object, 
+	  thì Java hiểu ngầm là gọi thông qua class nên vẫn có thể hoạt động được (mặc dù IDE sẽ hiển thị warning)
+
+	* non-static: thuộc về đối tượng
+	* static: thuộc về class
+
+- Generic class:
+	+ để sử dụng được Generic Type <T> thì cần phải khai báo ở ngay đầu class 
+		+ public class <T> ResponseData {}
+
+- Exception MethodArgumentNotValidException
+	+ chứa toàn bộ thông tin về lỗi thông qua việc getBindingResult() -> getFieldErrors()
+
+- Khi custom Exception (extends RuntimeException):
+	+ việc gán message bằng cách super(message) thực chất sẽ trải qua các giai đoạn
+		+ gọi tới constructor có tham số (message hoặc tham số tương ứng) ở class cha, ở đây là RuntimeException vì AppException extends nó. Class cha sẽ tiếp nhận message 
+		+ từ class RuntimeException tiếp tục gọi tới constructor tương ứng của class cha là Exception để truyền message
+		+ từ class Exception tiếp tục gọi tới constructor tương ứng của class cha là Throwable để truyền message
+			+ trong constructor này, message sẽ được gán cho biến detailMessage
+	+ từ đó mới có thể lấy ra được message khi đứng từ object AppException thông qua method: getMessage()
+		+ class AppException không có method này nhưng nó extends cha là RuntimeException nên nó sẽ tìm trong class cha
+		+ trong class RuntimeException cũng không có method này nhưng nó lại extends cha là Exception nên nó sẽ tìm trong class cha
+		+ trong class Exception cũng không có method này nhưng nó lại extends cha là Throwable nên nó sẽ tìm trong class cha
+		+ trong class Throwable có method getMessage(), mà method này lại trả về detailMessage được gán ở bước trên nên nó có thể lấy ra chính xác message thông báo lỗi
+
+- Kiểu dữ liệu: UUID
+	+ Hibernate sẽ mapping sang mySQL với kiểu dữ liệu là varchar(36) hoặc binary(16)
+		+ việc lưu dưới dạng binary(16) thực tế là lưu mã nhị phân
+			+ chèn dữ liệu id dạng UUID vào sql: uuid_to_bin(uuid())
+			+ chuyển đối từ mã nhị phân sang UUID bằng lệnh sql: bin_to_uuid(id)
+			
+- @Valid: kích hoạt Hibernate Validator để kiểm tra dữ liệu đầu vào có thoả mãn các yêu cầu (annotation được viết tương ứng trong DTO) hay không
+	+ nếu có -> ok, cho đi tiếp
+	+ nếu lỗi -> spring sẽ ném ra exception tương ứng với lỗi đó -> (có thể cho GlobalExceptionHandler bắt và xử lí)
+
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
