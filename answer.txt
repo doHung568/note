@@ -86,16 +86,120 @@
 - 
 
 
+Em chào anh ạ. Em xin phép tự giới thiệu, em là Hưng đến từ Thái Bình, hiện tại đang là sinh viên năm 3, chuyên ngành Java của đại học fpt Hà Nội. 
+Tính đến hiện tại thì em học lập trình được 2 năm. Trong 2 năm qua em có tham gia vào 1 vài dự án trên trường, tiêu biểu nhất thì em nghĩ là dự án quản lý hệ thống kho laptop. Dự án được viết bẳng java servlet kết hợp với jsp, vai trò của em trong dự án là xử lý phần nhập, xuất kho và tạo báo, thông kê cáo sản phẩm hàng tháng để thuận tiện cho việc theo dõi và quản lý.
+
+Ngoài ra, trên trường em cũng có dạy spring boot nhưng e thấy không được đầy đủ nên đã tự học phần này kết hợp với các framework của frontend. Hiện tại em đang xây dựng 1 website tìm trọ. 
+Ý tưởng cho dự án này là website của mình sẽ đóng vai trò là trung gian, ngoài ra còn có 2 role khác là chủ trọ và bên sinh viên. Các chủ trọ có thể yêu cầu đăng bài lên để cho sinh viên có thể biết về trọ của họ. Sinh viên sẽ có thể xem bài viết, đánh giá về các trọ (nếu họ đã từng ở trọ đó) một cách công tâm nhất để cho những người thuê sau này có thể biết thêm được các thông tin chi tiết hơn về trọ. Hệ thống có thể sẽ được tích hợp chat real time vào để thuận lợi cho việc trao đổi giữa các bên.
+Em mới vạch ra ý tưởng như vậy và đang làm ạ, hiện tại thì em mới xong được phần thiết kế db và nghiệp vụ. Dự kiến sẽ hoàn thành trong 2-3 tháng tới ạ.
+
+
+Bên cạnh đó thì em khá hứng thú với Javascript nên đã quyết định dùng AI để làm extension để có thể giúp giảm bớt thời gian học coursera trên trường. Tính năng chính của extension này là quét toàn bộ video trong 1 mooc coursera rồi tua nó đến cuối để được tính là hoàn thành việc xem video. 
+
+Qua giới thiệu, thì em biết rằng môi trường làm việc ở công ty mình rất tốt nên em quyết định apply CV vào để làm việc ở công ty. E rất mong sau buổi phỏng vấn này anh có thể sắp xếp cho em 1 ví trị thực tập để em có thể sớm tiếp xúc và làm quen với môi trường làm việc của doanh nghiệp, học hỏi thêm kinh nghiệm của anh chị đi trước ạ.
+
+Em xin cảm ơn, em xin hết ạ. E mời anh đặt câu hỏi ạ.
 
 
 
+- OOP: coi mọi thứ là các thực thể, đối tượng. Những đối tượng này có các thuộc tính (data) và hành vi (method).
+	+ Encapsulation (tính đóng gói): Giấu dữ liệu bên trong 1 lớp vỏ bọc, chỉ cho phép truy cập thông qua getter, setter. Mục đích là để bảo vệ tính toàn vẹn của dữ liệu
+		+ Vậy nên: sẽ phải để access modifier cho các field là private để tránh việc có thể set trục tiếp giá trị cho biến mà không thông qua setter
+		+ Việc dùng setter có mục đích chính là để check logic, validate trước khi set giá trị cho field
+		+ Tại sao không dùng public kết hợp với việc check logic trước khi set giá trị cho field, việc này tương tự với check logic trong setter mà?
+			+ Làm như thế thì vẫn được nhưng không an toàn. Ví dụ, trong 1 team, bạn có thể nhớ và check giá trị trước khi set nhưng người khác thì có thể là không nhớ mà vẫn cứ set giá trị cho biến -> lỗi.
+			+ Việc dùng setter để check logic sẽ giúp dev có thể an tâm khi set giá trị cho biến mà không cần phải lo về logic của biến đó, đồng thời giúp tiết kiệm thời gian khi tập trung logic lại 1 nơi (trong getter) thay vì logic rải rác khắp các nơi trong code.
+	
+	+ Inheritance (kế thừa): cho phép 1 class kế thừa thuộc tính và hành vi từ 1 class khác. Mục đích là để tái sử dụng code và mở rộng hành vi.	
+		+ Có 2 kiểu kế thừa:
+			+ extends: kế thừa class: is - a (class này là 1 phần của class khác): kế thừa logic, state từ abstract class 
+				+ 1 class không thể kế thừa nhiều class khác(tức là chỉ được extends tối đa 1 class khác)
+				+ cho phép class con sử dụng các field được khai báo ở class cha (trong khi class con không cần khai báo) và có thêm các field khác
+			+ implements: implement interface (class này có thể làm những gì của class khác): kế thừa hành vi
+				+ 1 class có thể implements nhiều interface khác nhau 
+		+ extends cho phép kế thừa cả field (state) và method, trong khi implements interface chỉ cho kế thừa method rồi tự triển khai. Vậy tại sao không dùng luôn extends để thay thế cho implements?
+			+ Vì: extends không cho phép 1 class có thể extends nhiều class khác trong khi implements thì cho phép implements nhiều interface cùng lúc. -> khả năng mở rộng về sau
+
+	+ Polymorphism (đa hình): cùng method call nhưng có thể có nhiều hành vi khác nhau, tuỳ thuộc vào đối tượng sử dụng.
+		+ 2 loại:
+			+ overloading: (nạp chồng): chạy ở thời điểm compile-time. Lí do để cho overloading chạy ở thời điểm này đó là quá trình compile sẽ chỉ dựa vào datatype của parameter, method name. Vậy khi compile, nó đã xác định được kiểu dữ liệu của biến, tên hàm cần gọi tới vì vậy nó đã biết được tên hàm và kiểu dữ liệu của các biến trong hàm cần gọi là nhưng không thể biết chắc chắn method trong class cha hay class con được gọi tới, vì chúng ta có thể new 1 đối tượng con thông qua cha, mà quá trình compile sẽ chưa thể xử lí được phần tạo đối tượng, vậy nên nó sẽ chỉ check được biến được tạo ra thuộc class nào, class đó có method đang được gọi tới không, nếu không thì compile fail, nếu có thì tiếpp tục compile. 
+			
+			+ overrding: (ghi đè): chạy ở thời điểm runtime. Quá trình runtime sẽ diễn ra việc gọi constructor, tạo đối tượng. Vậy nên đến lúc này, mới có thể xác định được chính xác method mà object call tới, vì đã các định được chính xác đối tượng thuộc class nào.
+			
+	+ Abstract (trừu tượng): 
 
 
+- Abstract class và Interface: cả 2 đều dùng để thể hiện tính trìu tượng
+	+ abstract class: là 1 loại class đặc biệt, giúp định nghĩa LÀ GÌ, tuy nhiên:
+		+ KHÔNG THỂ new ra 1 đối tượng bằng cách nào đi chăng nữa
+		+ có thể chứa abstract method (method không có body)
+		+ vẫn có thể khai báo các biến như class thông thường 
+		+ đương nhiên là vẫn có thể có các getter, setter cho các biến -> và các method getter, setter này không phải là abstract method. Vậy nên trong abstract class cha vẫn có thể chưa các method bình thường mà không phải là abstract method
+		+ nếu 1 class (thông thường) extends abstract class thì nó sẽ phải implement và triển khai mọi abstract class của cha để triển khai
+		+ 1 abstract class con extends abstract class cha thì nó có thể implements và triển khai luôn 1 phần các abstract method của cha, còn nếu không triển khai thì abstract con sẽ vẫn ngầm định implement các abstract method của class cha
+		+ việc class con triển khai code từ các method có ở cha thì sẽ không bắt buộc phải có @Override, mặc dù chúng cùng tên, nhưng nếu không có @Override thì sẽ không được coi là Overriding method cha. Tuy nhiên vẫn nên dùng @Override để Java có thể check được việc mismatch tên hàm.
+		+ 1 abstract class vẫn có thể extends 1 class (thông thường) khác, và nó vẫn giữ nguyên các đặc điểm của 1 class con (có thể sử dụng lại các state, method của cha) và mở rộng thêm các method khác 
+		+ không thể new ra 1 object con rồi object đó gọi tới 1 method chỉ có trong class của con mà không có trong class cha. Vì khi compile-time chạy, nó chưa tạo Object với đối tượng con, mà nó đang coi việc tạo object con thông qua cha (Parent child = new Child()) chỉ dừng tới việc Parent child, tức là child sẽ là Object của Parent nên sẽ không thể call method mà không có trong class Parent được. 
+		+ tại sao cần phải là abstract class mà không phải là class thường? 1 class vẫn có thể extends 1 class thường mà?
+			+ Vì: nếu là class thường thì mọi thứ sẽ không được hợp lí. Khi là class thường, ta có thể tạo đối tượng cho class đó, tuy nhiên đối tượng này gần như vô nghĩa, không có tác dụng gì.
+			+ Khi là class thường, method phải có body, tuy nhiên, trong body này chứa logic thì không hợp lí, mà đúng ra các logic sẽ phải do từng method trong từng object kế thừa tự xử lí logic cho riêng nó.
+
+			
+	+ interface: KHÔNG phải class, nó là 1 kiểu riêng biệt, có thể coi như 1 bản thiết kế hành vi thể hiện khả năng làm được gì.
+		+ không thể tạo field bên trong interface, không có constructor
+		+ access modifier mặc định luôn là public và là abstract method // những thứ này có sẵn từ khi Java xuất hiện -> những thứ này chẳng khác gì bên abstract method ở abstract class
+			+ Lí do mà access modifier là public vì nó phải được phép gọi tới từ bên ngoài 1 class khác khi các object implements nó được khởi tạo và cần dùng tới các method.
+		+ từ Java 8 trở đi, ngoài abstract ra, còn xuất hiện thêm keyword: default. Với default method, chúng ta có thể tạo body cho các method ngay tại interface, không bị giới hạn như các abstract method của các phiên bản trước đây (không cho phép method có body). Từ đó dẫn tới việc các class implements interface có thể dùng luôn các method này hoặc override nó để phù hợp với class của riêng nó.
+
+- super:
+	+ con gọi tới constructor tương ứng (cùng các kiểu tham số) của cha
 
 
+- Compile-time & Runtime
+	+ Compile-time: (thời điểm biên dịch): (chạy lệnh javac để biên dịch file .java -> .class)
+	+ Mục đích:
+		+ Kiểm tra syntax
+		+ Kiểm tra type
+		+ Kiểm tra method có tồn tại không
+		-> phát hiện lỗi sớm, đảm bảo type safety, giúp code an toàn trước khi chạy
+
+	+ Runtime: (thời điểm chạy): (chạy lệnh java)
+	+ Mục đích: 
+		+ Load class
+		+ Gọi constructor
+		+ Tạo OBJECT
+		+ Call method
+		+ Quản lí memory
+		-> thực thi logic, xử lí đa hình, xử lí tương tác thực tế.
 
 
+	** Compile-time không tạo object 
 
+- Array & ArrayList & LinkedList & List
+	+ Array: 
+		+ 1 vùng nhớ liên tục -> cho phép CPU truy cập 1 phần tử trong Array rất nhanh, O(1) vì, địa chỉ = base + index x size
+		+ điểm yếu: size cố định, không mở rộng thêm được. Lí do để nó là fixed size là: array được lưu trữ trong memory liên tục, vậy nên nếu resize thì phải tìm block nào đó đủ lớn -> khó
+	+ ArrayList
+		+ bản chất cũng là Array, nhưng có thể linh hoạt thay đổi kích cỡ của mảng
+		+ Vấn đề là nếu ArrayList có bản chất là Array thì nó thay đổi kích cỡ của mảng bằng cách nào?
+			+ Nó thay đổi size bằng cách copy toàn bộ các phần tử ở array cũ sang 1 array mới có kích cỡ gấp khoảng 1.5 lần mảng cũ
+		+ Độ phức tạp
+			+ get index để lấy element: O(1) (vì nó giống Array)
+			+ add:
+				+ nếu còn chỗ trống (size < capacity) -> O(1)
+				+ nếu không còn chỗ trống -> copy sang mảng mới rồi mới thêm được -> O(n)
 
+			+ remove(index): 
+				+ nếu xoá ở cuổi -> nhảy tới thẳng index đó rồi xoá -> O(n)
+				+ xoá ở chỗ bất kì -> xoá xong rồi phải dịch chuyển lại mảng để không cho phép null ở vị trí phần tử vừa bị xoá
 
+	+ LinkedList: bản chất là double linked list: tức là mỗi phần tử (node) sẽ liên kết tới phần tử ngay phía trước và phía sau nó
+		+ Độ phức tạp:
+			+ truy cập phần tử: O(n): vì cần phải duyệt từng node để tới node cần lấy
+			+ add, remove:
+				+ đầu, cuối: O(1), vì chỉ cần node.prev hoặc node.next nên rất nhanh 
+				+ giữa: O(n), mặc dù thêm thì chỉ mất O(1) nhưng thời gian để tới được chỗ cần thêm/xoá thì là O(n)
+
+	+ List: là 1 interface mà cả ArrayList và LinkedList đều implements nó
+		+ 
 

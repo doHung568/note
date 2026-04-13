@@ -57,5 +57,3 @@ greet("Hung"); // "Hung" là ĐỐI SỐ (argument)
 
 
 GF54XNJWZkXiCsvg
-
-hiện tại t đang có ý tưởng làm dự án website  đăng bài về các trọ, chung cư mini cho thuê dành cho sinh viên. Ý tưởng chính là bên trọ sẽ gửi yêu cầu đăng bài cho t, t sẽ là người phê duyệt nội dung bài đăng để quyết định có nên đăng bài đó không. Bên phía người thuê (có thể là sinh viên, người dùng khác chưa thuê trọ hoặc đã từng thuê) 
