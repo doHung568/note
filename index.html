@@ -1,399 +1,161 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Code Explain</title>
 </head>
 <body>
-    <div>
-        - tham số vs đối số
-	+ Tham số (parameter) là biến được khai báo 
-	+ Đối số (argument) là giá trị truyền vào
-
-- Composite key cho bảng trung gian
-+ Nếu juction table sử dụng khoá chính bằng cách kết hợp 2 khoá ngoại đến từ 2 bảng được (table A, table B) join:
-	+ Phải sử dụng 1 object (chứa FkA và FkB) để làm ID.
-		+ Object này thực tế là 1 class chứa 2 field là 2 Fk đến từ 2 bảng cần join
-			+ Class này phải được đánh dấu là @Embeddable (cho phép nhúng)
-			+ Tên các field và name của @Column có thể đặt tuỳ thích (tuy nhiên khi map sang class Entity trung gian thì cần phải lưu ý)
-	+ Class Entity cho table trung gian
-		+ Sử dụng @EmbeddedId cho field được khai báo với dataType là Object làm Id bên trên
-			+ Khi khai báo như thế, JPA sẽ hiểu rằng: Id của table này sẽ là sự kết hợp từ id.fieldA + id.fieldB (truy cập field thông qua object id)
-		+ Sử dụng @MapId
-			+ Giá trị trong @MapId("###") sẽ phải giống hệt với field trong Object được sử dụng làm Id tương ứng
-				+ JPA sẽ hiểu rằng: id.fieldA sẽ là giá trị của biến mà đang được sử dụng @MapId("fieldA")
-				tức là: x.getId() sẽ được gán giá trị cho biến id.fieldA
-		+ Sử dụng @JoinColumn
-			+ Giá trị trong @JoinColumn("###") sẽ là tên cột mà field được khai báo sử dụng để ghi giá trị 
-			+ Nên để giá trị ### này giống với giá trị trong @Column mà Object được khai báo vì chúng đều sử dụng chung 1 giá trị
-			+ Nếu không có @JoinColumn thì JPA sẽ tự động sinh ra tên cho cột cho field được khai báo bên bảng trung gian này sử dụng
-			có thể nó giống với tên cột tương ứng mà bên Object đang được sử dụng hoặc tên khác => rủi ro không đồng bộ
-
-- Instant vs LocalDateTime
-	+ Instant: chỉ 1 thời điểm xác định xảy ra hành động, nó không quan tâm tới UTC, nó lưu ngày giờ của chuẩn hệ thống (UTC) và có thể convert để hiển thị phù hợp với các UTC khác nhau.
-		   Nó sẽ lưu thời điểm được tính theo UTC chuẩn (tức là UTC 0), ví dụ nếu đang ở UTC +7 thì Instant sẽ lưu thời gian trừ đi 7 tiếng để về với UTC 0
-	+ LocalDateTime: bị phụ thuộc vào timezone tức là nó sẽ lưu thời gian đúng như hiện tại nhưng nhược điểm là sẽ không thể biết thời gian này đang lưu ở vùng UTC nào
-
-- Exception nên tách thành 2 folder:
-	+ custom: nơi định nghĩa lỗi
-	+ handler: nơi xử lý lỗi, biến lỗi thành response api
-
-- Generic Type: <T>
-	+ T là viết tắt của Type (đương nhiên là có thể đổi bằng bất kì chữ nào)
-	+ chưa biết kiểu dữ liệu, sẽ quyết định sau
-	+ nếu không dùng <T> thì có thể dùng Object để thay thế, tuy nhiên khi dùng Object sẽ không an toàn bằng dùng Generic Type
-	  bởi vì: khi dùng Object, có thể dữ liệu trả về không đúng với loại mong muốn nhưng chương trình không đưa ra cảnh báo nào
-	  còn khi dùng <T>, lúc trả về dữ liệu, chúng ta đã phải chỉ ra rằng phải trả về loại dữ liệu nào, nếu không khớp -> CẢNH BÁO SỚM
-
-- Generic method: 
-	+ khi method là STATIC muốn sử dụng Generic Type thì bắt buộc phải khai báo. Ví dụ: public static <T> Response<T> success(T data){}
-		+ <T> ở vị trí đầu tiên mang ý nghĩa giống như việc khai báo biến để có thể sử dụng phía sau
-		+ <T> ở vị trí thứ 2 và 3 là những nơi mà <T> được sử dụng
-	+ method không phải static thì không cần khai báo <T> vì lúc này nó sẽ sử dụng <T> của class
-
-        * bản chất của sự khác nhau trên là do <T> khi khai báo trên class là biến thuộc về đối tượng
-	  tức là khi tạo ra 1 đối tượng (object) thuộc về class đó, thì đối tượng đó đã biết được kiểu dữ liệu của mình là gì 
-	  nên khi dùng các method (non-static) thì nó sẽ không cần phải khai báo lại kiểu dữ liệu cần dùng là gì
-	* trong khi method static có thể chạy mà không cần khai báo object trước đó, vậy nên sẽ cần phải khai báo kiểu dữ liệu cho các method static này
-
-	! thực tế, khi 1 object được khai báo, nó sẽ có thể gọi tới cả method non-static và static, bởi vì khi gọi method non-static thông qua object, 
-	  thì Java hiểu ngầm là gọi thông qua class nên vẫn có thể hoạt động được (mặc dù IDE sẽ hiển thị warning)
-
-	* non-static: thuộc về đối tượng
-	* static: thuộc về class
-
-- Generic class:
-	+ để sử dụng được Generic Type <T> thì cần phải khai báo ở ngay đầu class 
-		+ public class <T> ResponseData {}
-
-- Exception MethodArgumentNotValidException
-	+ chứa toàn bộ thông tin về lỗi thông qua việc getBindingResult() -> getFieldErrors()
-
-- Khi custom Exception (extends RuntimeException):
-	+ việc gán message bằng cách super(message) thực chất sẽ trải qua các giai đoạn
-		+ gọi tới constructor có tham số (message hoặc tham số tương ứng) ở class cha, ở đây là RuntimeException vì AppException extends nó. Class cha sẽ tiếp nhận message 
-		+ từ class RuntimeException tiếp tục gọi tới constructor tương ứng của class cha là Exception để truyền message
-		+ từ class Exception tiếp tục gọi tới constructor tương ứng của class cha là Throwable để truyền message
-			+ trong constructor này, message sẽ được gán cho biến detailMessage
-	+ từ đó mới có thể lấy ra được message khi đứng từ object AppException thông qua method: getMessage()
-		+ class AppException không có method này nhưng nó extends cha là RuntimeException nên nó sẽ tìm trong class cha
-		+ trong class RuntimeException cũng không có method này nhưng nó lại extends cha là Exception nên nó sẽ tìm trong class cha
-		+ trong class Exception cũng không có method này nhưng nó lại extends cha là Throwable nên nó sẽ tìm trong class cha
-		+ trong class Throwable có method getMessage(), mà method này lại trả về detailMessage được gán ở bước trên nên nó có thể lấy ra chính xác message thông báo lỗi
-
-- Kiểu dữ liệu: UUID
-	+ Hibernate sẽ mapping sang mySQL với kiểu dữ liệu là varchar(36) hoặc binary(16)
-		+ việc lưu dưới dạng binary(16) thực tế là lưu mã nhị phân
-			+ chèn dữ liệu id dạng UUID vào sql: uuid_to_bin(uuid())
-			+ chuyển đối từ mã nhị phân sang UUID bằng lệnh sql: bin_to_uuid(id)
-			
-- @Valid: kích hoạt Hibernate Validator để kiểm tra dữ liệu đầu vào có thoả mãn các yêu cầu (annotation được viết tương ứng trong DTO) hay không
-	+ nếu có -> ok, cho đi tiếp
-	+ nếu lỗi -> spring sẽ ném ra exception tương ứng với lỗi đó -> (có thể cho GlobalExceptionHandler bắt và xử lí)
-
-- 
-
-
-Em chào anh ạ. Em xin phép tự giới thiệu, em là Hưng đến từ Thái Bình, hiện tại đang là sinh viên năm 3, chuyên ngành Java của đại học fpt Hà Nội. 
-Tính đến hiện tại thì em học lập trình được 2 năm. Trong 2 năm qua em có tham gia vào 1 vài dự án trên trường, tiêu biểu nhất thì em nghĩ là dự án quản lý hệ thống kho laptop. Dự án được viết bẳng java servlet kết hợp với jsp, vai trò của em trong dự án là xử lý phần nhập, xuất kho và tạo báo, thông kê cáo sản phẩm hàng tháng để thuận tiện cho việc theo dõi và quản lý.
-
-Ngoài ra, trên trường em cũng có dạy spring boot nhưng e thấy không được đầy đủ nên đã tự học phần này kết hợp với các framework của frontend. Hiện tại em đang xây dựng 1 website tìm trọ. 
-Ý tưởng cho dự án này là website của mình sẽ đóng vai trò là trung gian, ngoài ra còn có 2 role khác là chủ trọ và bên sinh viên. Các chủ trọ có thể yêu cầu đăng bài lên để cho sinh viên có thể biết về trọ của họ. Sinh viên sẽ có thể xem bài viết, đánh giá về các trọ (nếu họ đã từng ở trọ đó) một cách công tâm nhất để cho những người thuê sau này có thể biết thêm được các thông tin chi tiết hơn về trọ. Hệ thống có thể sẽ được tích hợp chat real time vào để thuận lợi cho việc trao đổi giữa các bên.
-Em mới vạch ra ý tưởng như vậy và đang làm ạ, hiện tại thì em mới xong được phần thiết kế db và nghiệp vụ. Dự kiến sẽ hoàn thành trong 2-3 tháng tới ạ.
-
-
-Bên cạnh đó thì em khá hứng thú với Javascript nên đã quyết định dùng AI để làm extension để có thể giúp giảm bớt thời gian học coursera trên trường. Tính năng chính của extension này là quét toàn bộ video trong 1 mooc coursera rồi tua nó đến cuối để được tính là hoàn thành việc xem video. 
-
-Qua giới thiệu, thì em biết rằng môi trường làm việc ở công ty mình rất tốt nên em quyết định apply CV vào để làm việc ở công ty. E rất mong sau buổi phỏng vấn này anh có thể sắp xếp cho em 1 ví trị thực tập để em có thể sớm tiếp xúc và làm quen với môi trường làm việc của doanh nghiệp, học hỏi thêm kinh nghiệm của anh chị đi trước ạ.
-
-Em xin cảm ơn, em xin hết ạ. E mời anh đặt câu hỏi ạ.
-
-
-
-- OOP: coi mọi thứ là các thực thể, đối tượng. Những đối tượng này có các thuộc tính (data) và hành vi (method).
-	+ Encapsulation (tính đóng gói): Giấu dữ liệu bên trong 1 lớp vỏ bọc, chỉ cho phép truy cập thông qua getter, setter. Mục đích là để bảo vệ tính toàn vẹn của dữ liệu
-		+ Vậy nên: sẽ phải để access modifier cho các field là private để tránh việc có thể set trục tiếp giá trị cho biến mà không thông qua setter
-		+ Việc dùng setter có mục đích chính là để check logic, validate trước khi set giá trị cho field
-		+ Tại sao không dùng public kết hợp với việc check logic trước khi set giá trị cho field, việc này tương tự với check logic trong setter mà?
-			+ Làm như thế thì vẫn được nhưng không an toàn. Ví dụ, trong 1 team, bạn có thể nhớ và check giá trị trước khi set nhưng người khác thì có thể là không nhớ mà vẫn cứ set giá trị cho biến -> lỗi.
-			+ Việc dùng setter để check logic sẽ giúp dev có thể an tâm khi set giá trị cho biến mà không cần phải lo về logic của biến đó, đồng thời giúp tiết kiệm thời gian khi tập trung logic lại 1 nơi (trong getter) thay vì logic rải rác khắp các nơi trong code.
-	
-	+ Inheritance (kế thừa): cho phép 1 class kế thừa thuộc tính, hành vi từ 1 class khác. Mục đích là để tái sử dụng code và mở rộng hành vi.	
-		+ Có 2 kiểu kế thừa:
-			+ extends: kế thừa class: is - a (class này là 1 phần của class khác): kế thừa logic, state từ abstract class 
-				+ 1 class không thể kế thừa nhiều class khác(tức là chỉ được extends tối đa 1 class khác)
-				+ cho phép class con sử dụng các field được khai báo ở class cha (trong khi class con không cần khai báo) và có thêm các field khác
-			+ implements: implement interface (class này có thể làm những gì của class khác): can-do: kế thừa hành vi
-				+ 1 class có thể implements nhiều interface khác nhau 
-		+ extends cho phép kế thừa cả field (state) và method, trong khi implements interface chỉ cho kế thừa method rồi tự triển khai. Vậy tại sao không dùng luôn extends để thay thế cho implements?
-			+ Vì: extends không cho phép 1 class có thể extends nhiều class khác trong khi implements thì cho phép implements nhiều interface cùng lúc. -> khả năng mở rộng về sau
-
-	+ Polymorphism (đa hình): cùng method call nhưng có thể có nhiều hành vi khác nhau, tuỳ thuộc vào đối tượng sử dụng.
-		+ 2 loại:
-			+ overloading: (nạp chồng): chạy ở thời điểm compile-time. Lí do để cho overloading chạy ở thời điểm này đó là quá trình compile sẽ chỉ dựa vào datatype của parameter, method name. Vậy khi compile, nó đã xác định được kiểu dữ liệu của biến, tên hàm cần gọi tới vì vậy nó đã biết được tên hàm và kiểu dữ liệu của các biến trong hàm cần gọi là nhưng không thể biết chắc chắn method trong class cha hay class con được gọi tới, vì chúng ta có thể new 1 đối tượng con thông qua cha, mà quá trình compile sẽ chưa thể xử lí được phần tạo đối tượng, vậy nên nó sẽ chỉ check được biến được tạo ra thuộc class nào, class đó có method đang được gọi tới không, nếu không thì compile fail, nếu có thì tiếpp tục compile. 
-			
-			+ overrding: (ghi đè): chạy ở thời điểm runtime. Quá trình runtime sẽ diễn ra việc gọi constructor, tạo đối tượng. Vậy nên đến lúc này, mới có thể xác định được chính xác method mà object call tới, vì đã các định được chính xác đối tượng thuộc class nào.
-			
-	+ Abstract (trừu tượng): 
-
-
-- Abstract class và Interface: cả 2 đều dùng để thể hiện tính trìu tượng
-	+ abstract class: là 1 loại class đặc biệt, giúp định nghĩa LÀ GÌ, tuy nhiên:
-		+ KHÔNG THỂ new ra 1 đối tượng bằng cách nào đi chăng nữa
-		+ có thể chứa abstract method (method không có body)
-		+ vẫn có thể khai báo các biến như class thông thường 
-		+ đương nhiên là vẫn có thể có các getter, setter cho các biến -> và các method getter, setter này không phải là abstract method. Vậy nên trong abstract class cha vẫn có thể chưa các method bình thường mà không phải là abstract method
-		+ nếu 1 class (thông thường) extends abstract class thì nó sẽ phải implement và triển khai mọi abstract class của cha để triển khai
-		+ 1 abstract class con extends abstract class cha thì nó có thể implements và triển khai luôn 1 phần các abstract method của cha, còn nếu không triển khai thì abstract con sẽ vẫn ngầm định implement các abstract method của class cha
-		+ việc class con triển khai code từ các method có ở cha thì sẽ không bắt buộc phải có @Override, mặc dù chúng cùng tên, nhưng nếu không có @Override thì vẫn được coi là Overriding method cha. Tuy nhiên vẫn nên dùng @Override để Java có thể check được việc mismatch tên hàm.
-		+ 1 abstract class vẫn có thể extends 1 class (thông thường) khác, và nó vẫn giữ nguyên các đặc điểm của 1 class con (có thể sử dụng lại các state, method của cha) và mở rộng thêm các method khác 
-		+ không thể new ra 1 object con rồi object đó gọi tới 1 method chỉ có trong class của con mà không có trong class cha. Vì khi compile-time chạy, nó chưa tạo Object với đối tượng con, mà nó đang coi việc tạo object con thông qua cha (Parent child = new Child()) chỉ dừng tới việc Parent child, tức là child sẽ là Object của Parent nên sẽ không thể call method mà không có trong class Parent được. 
-		+ tại sao cần phải là abstract class mà không phải là class thường? 1 class vẫn có thể extends 1 class thường mà?
-			+ Vì: nếu là class thường thì mọi thứ sẽ không được hợp lí. Khi là class thường, ta có thể tạo đối tượng cho class đó, tuy nhiên đối tượng này gần như vô nghĩa, không có tác dụng gì.
-			+ Khi là class thường, method phải có body, tuy nhiên, trong body này chứa logic thì không hợp lí, mà đúng ra các logic sẽ phải do từng method trong từng object kế thừa tự xử lí logic cho riêng nó.
-
-			
-	+ interface: KHÔNG phải class, nó là 1 kiểu riêng biệt, có thể coi như 1 bản thiết kế hành vi thể hiện khả năng làm được gì.
-		+ không thể tạo field bên trong interface, không có constructor
-		+ access modifier mặc định luôn là public và là abstract method // những thứ này có sẵn từ khi Java xuất hiện -> những thứ này chẳng khác gì bên abstract method ở abstract class
-			+ Lí do mà access modifier là public vì nó phải được phép gọi tới từ bên ngoài 1 class khác khi các object implements nó được khởi tạo và cần dùng tới các method.
-		+ từ Java 8 trở đi, ngoài abstract ra, còn xuất hiện thêm keyword: default. Với default method, chúng ta có thể tạo body cho các method ngay tại interface, không bị giới hạn như các abstract method của các phiên bản trước đây (không cho phép method có body). Từ đó dẫn tới việc các class implements interface có thể dùng luôn các method này hoặc override nó để phù hợp với class của riêng nó.
-
-		+ interface cho phép implements nhiều interface khác nhau ngay cả khi các interface giống hệt nhau về method, tuy nhiên điều này không có ảnh hưởng gì, vì class nào implements sẽ phải tự triển khai code của riêng nó (cho method đó) nên khi chạy vẫn chỉ là chạy tới method trong class con mà không cần quan tâm method đó đến từ interface nào.
-
-- super:
-	+ con gọi tới constructor tương ứng (cùng các kiểu tham số) của cha
-
-
-- Compile-time & Runtime
-	+ Compile-time: (thời điểm biên dịch): (chạy lệnh javac để biên dịch file .java -> .class)
-	+ Mục đích:
-		+ Kiểm tra syntax
-		+ Kiểm tra type
-		+ Kiểm tra method có tồn tại không
-		-> phát hiện lỗi sớm, đảm bảo type safety, giúp code an toàn trước khi chạy
-
-	+ Runtime: (thời điểm chạy): (chạy lệnh java)
-	+ Mục đích: 
-		+ Load class
-		+ Gọi constructor
-		+ Tạo OBJECT
-		+ Call method
-		+ Quản lí memory
-		-> thực thi logic, xử lí đa hình, xử lí tương tác thực tế.
-
-
-	** Compile-time không tạo object 
-
-- Array & ArrayList & LinkedList & List
-	+ Array: 
-		+ 1 vùng nhớ liên tục -> cho phép CPU truy cập 1 phần tử trong Array rất nhanh, O(1) vì, địa chỉ = base + index x size
-		+ điểm yếu: size cố định, không mở rộng thêm được. Lí do để nó là fixed size là: array được lưu trữ trong memory liên tục, vậy nên nếu resize thì phải tìm block nào đó đủ lớn -> khó
-	+ ArrayList
-		+ bản chất cũng là Array, nhưng có thể linh hoạt thay đổi kích cỡ của mảng
-		+ Vấn đề là nếu ArrayList có bản chất là Array thì nó thay đổi kích cỡ của mảng bằng cách nào?
-			+ Nó thay đổi size bằng cách copy toàn bộ các phần tử ở array cũ sang 1 array mới có kích cỡ gấp khoảng 1.5 lần mảng cũ
-		+ Độ phức tạp
-			+ get index để lấy element: O(1) (vì nó giống Array)
-			+ add:
-				+ nếu còn chỗ trống (size < capacity) -> O(1)
-				+ nếu không còn chỗ trống -> copy sang mảng mới rồi mới thêm được -> O(n)
-
-			+ remove(index): 
-				+ nếu xoá ở cuổi -> nhảy tới thẳng index đó rồi xoá -> O(1)
-				+ xoá ở chỗ bất kì -> xoá xong rồi phải dịch chuyển lại mảng để không cho phép null ở vị trí phần tử vừa bị xoá -> O(n)
-
-	+ LinkedList: bản chất là double linked list: tức là mỗi phần tử (node) sẽ liên kết tới phần tử ngay phía trước và phía sau nó
-		+ Độ phức tạp:
-			+ truy cập phần tử: O(n): vì cần phải duyệt từng node để tới node cần lấy
-			+ add, remove:
-				+ đầu, cuối: O(1), vì chỉ cần node.prev hoặc node.next nên rất nhanh 
-				+ giữa: O(n), mặc dù thêm thì chỉ mất O(1) nhưng thời gian để tới được chỗ cần thêm/xoá thì là O(n)
-
-	+ List: là 1 interface mà cả ArrayList và LinkedList đều implements nó
-	
-
-- List, Set, Map
-	+ List: 
-		+ là 1 Collections (extends Collection)
-		+ lưu dữ liệu theo thứ tự insert
-		+ cho phép trùng lặp giá trị 
-		+ truy cập giá trị bằng index
-
-	+ Set:
-		+ là 1 Collections (extends Collection)
-		+ tập hợp các phần tử duy nhất
-		+ không quan tâm tới thứ tự -> không có index 
-		+ chia thành 3 loại:
-			+ HashSet: 
-				+ không đảm bảo thứ tự
-				+ nhanh nhanh trong 3 loại 
-			+ LinkedHashSet:
-				+ bản chất = LinkedList + HashSet
-				+ giữ được thứ tự insert
-				+ tốc độ trung bình
-			+ TreeSet:
-				+ tự động sắp xếp các phần tử
-				+ chậm nhất trong 3 loại Set
-	+ Map:
-		+ không phải là Collection, nó là cấu trúc mapping Key -> Value
-		+ key là duy nhất, value có thể giống nhau
-		+ chia thành 3 loại giống Set
-
-- Tại sao Collection và Map đều dùng Wrapper Type chứ không phải primitive type?
-	+ Cả Collections và Map đều là Generic class, chúng sử dụng Generic type, mà thiết kế này chỉ sử dụng được với Object chứ không dùng được với kiểu primitive
-		* các Wrapper Type đều là Object: chúng có class của riêng mình, không giống như primitive type (không có class cho bản thân nên không được coi là Object)
-
-- String, StringBuilder, StringBuffer
-	+ String:
-		+ là immutable (bất biến: không thay đổi)
-		+ 
-	+ StringBuilder:
-
-	+ StringBuffer:
-
-- Throwable: lớp cha của tất cả lỗi và ngoại lệ
-	+ chia thành 2 loại
-		+ Error (lỗi):
-
-		+ Exception (ngoại lệ):
-			+ chia thành 2 loại:
-				+ Checked Exception: các lỗi được kiểm tra tại compile-time
-					+ thường là các lỗi có thể dự đoán trước được
-					+ bắt buộc phải xử lí trong try catch, nếu không thì sẽ bị compile error
-				+ Unchecked Exception: các lỗi được kiểm tra lúc runtime
-					+ không dự đoán trước được
-					+ thường là các lỗi liên quan đến logic
-					+ những lỗi này không nên cố xử lí trong try catch vì nó là lỗi logic nên cần phải biết lỗi ở đâu để sửa
-	
-
-- API response trong SpringBoot
-	+ Khi trả ra response cho 1 API (thường thì chúng ta sẽ cấu hình để trả về 1 Object chứa các thông tin như error code, message, data (success), error detail, path, time, ...)
-	+ Sẽ có những field trong Object chúng ta không muốn chúng được trả về cùng với API response (ví dụ: khi có lỗi xảy ra, ta không muốn trả data về, mà thay vào đó là phải trả error detail), nhưng lúc này api sẽ response lại giá trị (data: null) mặc dù ta không set giá trị cho biến này.
-		+ Thực tế, Jackson đã tự động set value cho các field không có giá trị là null và nó sẽ phản hồi ra tất cả các field có trong Object đó	
-		+ Cách khắc phục tình trạng này đó là dùng @JsonInclude(JsonInclude.Include.NON_NULL). Mục đích là để khi field có giá trị null thì sẽ không set vào field để trả ra trong response
-
-
-- Tại sao response DTO lại cần phải có Getter?
-	+ khi service xử lí xong, nó sẽ dùng builder để tạo ra 1 object (Java) 
-	+ controller có thể sẽ return response chứa object đó
-		+ vấn đề là api không biết object java là gì, nó chỉ hiểu JSON format
-		+ vậy nên Jackson phải convert từ Object -> JSON
-			+ quá trình này Jackson cần lấy các thuộc tính của Object để convert 
-				+ THEO MẶC ĐỊNH: Jackson sẽ sử dụng Getter (Java Bean convention) để lấy các giá trị từ object 
-
-
-- Tại sao request DTO cần có cả Getter và Setter?
-	+ request là đầu vào, mà dữ liệu đầu vào nhận được thường là JSON, nhưng khi chúng ta code thì đối tượng làm việc lại là Object nên sẽ cần phải chuyển từ JSON -> Object
-		+ điều này đã được Jackson hỗ trợ, thông thường nó sẽ dùng phương thức Setter để set giá trị từ JSON -> Object
-	+ request DTO cũng cần phải có Getter vì ở Service Layer thường xuyên phải lấy các giá trị từ request để có thể xử lí (ví dụ như việc getPassword() từ request để so sánh với password trong db,..)
-	
-- Reflection trong Java?
-	+ 
-
-- File package.json chứa:
-	+ khai báo thông tin project: (metadata): name, version,...
-	+ quản lí dependencies
-	+ chứa scripts
-
-- File package-lock.json:
-	+ Nếu package.json khai báo các dependency cần thiết cho project thì package-lock.json sẽ lưu lại chính xác version của các dependency và toàn bộ dependency con đã được cài.
-	+ Nhờ đó đảm bảo các môi trường khác nhau (máy dev, server, CI/CD) đều cài cùng một version dependency.
-	+ Nếu không có package-lock.json thì khi chạy npm install ở các thời điểm khác nhau có thể cài các version khác nhau (do dấu ^), dẫn đến lỗi không đồng nhất. 
-		+ Khi có package-lock.json, npm sẽ dựa vào file này để cài đúng các version đã được lock trong file package-json trước đó.
-
-
-├───assets			// chứa tài nguyên tĩnh: ảnh, font, icon. Dùng để import vào components
-├───components		// các UI nhỏ, có thể tái sử dụng (button, input). 
-├───context		// quản lý state global (toàn app)
-├───hooks			// custom React hooks. Giống helper logic, logic nhỏ. Mục đích: tái sử dụng logic (không phải UI)
-├───pages			// mỗi file là 1 màn hình (route). Đại diện cho 1 url
-├───routes			// quản lý routing. Mapping URL <-> page. Dùng react-router-dom. Giống @RequestMapping. Mục đích: tách routing ra khỏi App.js để code clean hơn.
-├───services		// call API (connect backend). Giống Service Layer. Mục đích: tách API ra khỏi UI 
-├───utils			// hàm tiện ích (helpers). Giống utils (java)
-├───App.jsx		// root component. Chứa layout chính, mount routes.
-├───main.jsx		// entry point: điểm bắt đầu chạy app. Giống main() (java). Mục đích: render React vào DOM (index.html) 
-└───index.html 	// nơi react inject vào
-
-- Luồng hoạt động của React:
-	+ index.html -> main.jsx -> App.jsx -> routes/ -> pages/ -> components/ -> services (call API)
-
-- export default xxx: 
-	+ file sẽ mặc định export ra function có tên là xxx	
-- import Abc from "./Xyz":
-	+ file sẽ hiểu: lấy export default từ file ./Xyz và đặt tên cho nó là Abc
-
-
-- <React.StrictMode></React.StrictMode>: 
-	+ là chế độ kiểm tra (dev-only), giúp kiểm tra bug sớm khi code React
-	+ Nó có thể:
-		+ cảnh báo code không an toàn
-		+ phát hiện side-effect sai chỗ
-	+ không bắt buộc phải dùng trong code, nhưng nên dùng để code ổn định hơn
-
-- createContext(): 
-	+ tạo 1 Object Context nhằm chia sẻ dữ liệu (ngữ cảnh) giữa các component cục bộ hoặc có mối quan hệ với nhau mà không cần phải truyền props qua từng cấp độ trung gian (tránh việc props(tham số) drilling)
-	Tức là cho phép các component con dù có ở sâu bao nhiêu trong cây component vẫn có thể truy cập được dữ liệu trong component cha ở cấp cao nhất 
-	+ trả về 1 đối tượng chứa Provider và Consumer
-
-- useState():
-	+ cho phép các function lưu trữ, quản lý dữ liệu nội bộ (state)
-	+ tự động cập nhật lại giao diện (re-render) khi dữ liệu thay đổi 
-	+ biến sẽ không bị khởi tạo lại mỗi khi component re-render, đảm bảo dữ liệu được nhất quán 
-	+ cú pháp: 
-		const [state, setState] = useState(initialValue);
-		
-		+ state: Giá trị hiện tại của state.
-		+ setState: Hàm dùng để cập nhật giá trị mới và báo cho React re-render.
-		+ initialValue: Giá trị khởi tạo của state (chỉ dùng trong lần render đầu tiên)
-
-- <BrowserRouter></BrowserRouter>
-	+ đọc URL trên trình duyệt (giữ cho URL và UI khớp với nhau)
-	+ quyết định route nào được active
-	+ nếu không có nó thì <Routes></Routes> sẽ bị lỗi 
-
-- Dùng e.preventDefault() khi submit form:
-	+ Mặc định xử lí của trình duyệt khi submit form là gửi request -> reload lại toàn bộ page, xoá hết state -> re-render page từ đầu (HTML từ server) 
-	+ Điều này gây hại khi sử dụng React:
-		+ Phá vỡ nguyên tắc của React (state thay đổi -> re-render component). Nhưng khi reload thì mọi thứ được useState(""), React mất quyền kiểm soát
-		+ UX tệ:
-			+ Khi nhập sai thông tin thì page sẽ reload, phải nhập lại mọi thứ từ đầu vì mọi state đã bị xoá
-			+ 
-
-- Khi validation bên BE bắt lỗi, nó sẽ bắt được và trả ra toàn bộ lỗi của 1 field.
-
-- ESLint là tool dùng để:
-	+ bắt lỗi sai cú pháp
-	+ ép code style
-	+ giữ code đồng nhất trong team
-
-- File eslint.config.js:
-	+ là file config của ESLint
-	+ chứa:
-		+ quy tắc linting
-		+ môi trường (browser, node)
-		+ plugin
-		+ rule custom của team
-
-- AxiosError: 1 class lỗi của Axios. Khi HTTP không return về status dạng 2xx thì Axios sẽ ném ra lỗi này.
-
-- Trong class AxiosError, có 1 số field quan trọng:
-	+ response: chứa toàn bộ response từ BE
-		+ data: chứa toàn bộ thông tin API response 
-			+ errors: (field này có thể thay đổi phụ thuộc vào tên field bên BE): chứa toàn bộ các lỗi được BE trả về 
-			+ chứa luôn cả data (field) ở BE phản hồi 
-		
-- axios:
-	+ gọi tới các API backend rồi nhận về response
-	+ được thiết kế: status >= 200 && status <= 300 -> resolve
-	+ còn lại được coi là lỗi (dùng catch để bắt)
-
-- JWT:
-	+ cơ chế xác thực và truyền thông tin an toàn giữa client và server
-	+ s
-- jwt stateless:
-	+ 
-    </div>
+
+<h2>Tham số vs Đối số</h2>
+<ul>
+    <li>Tham số (parameter): biến được khai báo</li>
+    <li>Đối số (argument): giá trị truyền vào</li>
+</ul>
+
+<h2>Composite Key cho bảng trung gian</h2>
+<ul>
+    <li>Dùng object chứa 2 khóa ngoại làm ID</li>
+    <li>Object phải là class có 2 field FK</li>
+    <li>Dùng <code>@Embeddable</code></li>
+    <li>Entity trung gian dùng <code>@EmbeddedId</code></li>
+    <li>Dùng <code>@MapId</code> để map field</li>
+    <li>Dùng <code>@JoinColumn</code> để chỉ định tên cột</li>
+</ul>
+
+<h2>Instant vs LocalDateTime</h2>
+<ul>
+    <li>Instant: lưu theo UTC (chuẩn quốc tế)</li>
+    <li>LocalDateTime: phụ thuộc timezone</li>
+</ul>
+
+<h2>Exception Structure</h2>
+<ul>
+    <li>custom: định nghĩa lỗi</li>
+    <li>handler: xử lý lỗi</li>
+</ul>
+
+<h2>Generic Type</h2>
+<ul>
+    <li>&lt;T&gt; đại diện cho kiểu dữ liệu</li>
+    <li>An toàn hơn Object</li>
+</ul>
+
+<h2>Generic Method</h2>
+<ul>
+    <li>Method static phải khai báo &lt;T&gt;</li>
+    <li>Method non-static dùng trực tiếp từ class</li>
+</ul>
+
+<h2>Generic Class</h2>
+<pre>public class ResponseData&lt;T&gt; {}</pre>
+
+<h2>Validation Exception</h2>
+<ul>
+    <li><code>MethodArgumentNotValidException</code> chứa lỗi validation</li>
+</ul>
+
+<h2>UUID</h2>
+<ul>
+    <li>Mapping sang MySQL: varchar(36) hoặc binary(16)</li>
+</ul>
+
+<h2>@Valid</h2>
+<ul>
+    <li>Kích hoạt validation cho DTO</li>
+</ul>
+
+
+<h2>OOP</h2>
+<ul>
+    <li>Encapsulation: đóng gói dữ liệu</li>
+    <li>Inheritance: kế thừa</li>
+    <li>Polymorphism: đa hình</li>
+    <li>Abstraction: trừu tượng</li>
+</ul>
+
+<h2>Abstract vs Interface</h2>
+<ul>
+    <li>Abstract class: có thể chứa logic + field</li>
+    <li>Interface: chỉ định nghĩa hành vi</li>
+</ul>
+
+<h2>Compile-time vs Runtime</h2>
+<ul>
+    <li>Compile-time: kiểm tra lỗi</li>
+    <li>Runtime: chạy chương trình</li>
+</ul>
+
+<h2>Collection</h2>
+<ul>
+    <li>Array: cố định</li>
+    <li>ArrayList: resize được</li>
+    <li>LinkedList: dạng liên kết</li>
+</ul>
+
+<h2>List, Set, Map</h2>
+<ul>
+    <li>List: có thứ tự, cho phép trùng</li>
+    <li>Set: không trùng</li>
+    <li>Map: key-value</li>
+</ul>
+
+<h2>String</h2>
+<ul>
+    <li>String: immutable</li>
+</ul>
+
+<h2>Exception</h2>
+<ul>
+    <li>Checked: compile-time</li>
+    <li>Unchecked: runtime</li>
+</ul>
+
+<h2>API Response</h2>
+<ul>
+    <li>Dùng <code>@JsonInclude(NON_NULL)</code> để bỏ field null</li>
+</ul>
+
+<h2>DTO</h2>
+<ul>
+    <li>Response cần Getter</li>
+    <li>Request cần Getter + Setter</li>
+</ul>
+
+<h2>React Structure</h2>
+<ul>
+    <li>assets</li>
+    <li>components</li>
+    <li>context</li>
+    <li>hooks</li>
+    <li>pages</li>
+    <li>routes</li>
+    <li>services</li>
+    <li>utils</li>
+</ul>
+
+<h2>React Flow</h2>
+<p>index.html → main.jsx → App.jsx → routes → pages → components</p>
+
+<h2>React Concepts</h2>
+<ul>
+    <li>createContext: chia sẻ state</li>
+    <li>useState: quản lý state</li>
+    <li>BrowserRouter: routing</li>
+    <li>preventDefault: tránh reload</li>
+</ul>
+
+<h2>Axios</h2>
+<ul>
+    <li>Gọi API</li>
+    <li>Status 2xx → success</li>
+    <li>Khác → error</li>
+</ul>
+
+<h2>JWT</h2>
+<ul>
+    <li>Xác thực giữa client và server</li>
+</ul>
+
 </body>
 </html>
