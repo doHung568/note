@@ -57,3 +57,27 @@ greet("Hung"); // "Hung" là ĐỐI SỐ (argument)
 
 
 GF54XNJWZkXiCsvg
+
+- tại sao dto.response phải có getter
+
+
+
+
+file authContext.js dùng để làm gì?
+
+
+
+
+
+- auth
+- 
+
+
+
+
+
+
+
+
+
+

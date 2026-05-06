@@ -110,12 +110,12 @@ Em xin cảm ơn, em xin hết ạ. E mời anh đặt câu hỏi ạ.
 			+ Làm như thế thì vẫn được nhưng không an toàn. Ví dụ, trong 1 team, bạn có thể nhớ và check giá trị trước khi set nhưng người khác thì có thể là không nhớ mà vẫn cứ set giá trị cho biến -> lỗi.
 			+ Việc dùng setter để check logic sẽ giúp dev có thể an tâm khi set giá trị cho biến mà không cần phải lo về logic của biến đó, đồng thời giúp tiết kiệm thời gian khi tập trung logic lại 1 nơi (trong getter) thay vì logic rải rác khắp các nơi trong code.
 	
-	+ Inheritance (kế thừa): cho phép 1 class kế thừa thuộc tính và hành vi từ 1 class khác. Mục đích là để tái sử dụng code và mở rộng hành vi.	
+	+ Inheritance (kế thừa): cho phép 1 class kế thừa thuộc tính, hành vi từ 1 class khác. Mục đích là để tái sử dụng code và mở rộng hành vi.	
 		+ Có 2 kiểu kế thừa:
 			+ extends: kế thừa class: is - a (class này là 1 phần của class khác): kế thừa logic, state từ abstract class 
 				+ 1 class không thể kế thừa nhiều class khác(tức là chỉ được extends tối đa 1 class khác)
 				+ cho phép class con sử dụng các field được khai báo ở class cha (trong khi class con không cần khai báo) và có thêm các field khác
-			+ implements: implement interface (class này có thể làm những gì của class khác): kế thừa hành vi
+			+ implements: implement interface (class này có thể làm những gì của class khác): can-do: kế thừa hành vi
 				+ 1 class có thể implements nhiều interface khác nhau 
 		+ extends cho phép kế thừa cả field (state) và method, trong khi implements interface chỉ cho kế thừa method rồi tự triển khai. Vậy tại sao không dùng luôn extends để thay thế cho implements?
 			+ Vì: extends không cho phép 1 class có thể extends nhiều class khác trong khi implements thì cho phép implements nhiều interface cùng lúc. -> khả năng mở rộng về sau
@@ -137,7 +137,7 @@ Em xin cảm ơn, em xin hết ạ. E mời anh đặt câu hỏi ạ.
 		+ đương nhiên là vẫn có thể có các getter, setter cho các biến -> và các method getter, setter này không phải là abstract method. Vậy nên trong abstract class cha vẫn có thể chưa các method bình thường mà không phải là abstract method
 		+ nếu 1 class (thông thường) extends abstract class thì nó sẽ phải implement và triển khai mọi abstract class của cha để triển khai
 		+ 1 abstract class con extends abstract class cha thì nó có thể implements và triển khai luôn 1 phần các abstract method của cha, còn nếu không triển khai thì abstract con sẽ vẫn ngầm định implement các abstract method của class cha
-		+ việc class con triển khai code từ các method có ở cha thì sẽ không bắt buộc phải có @Override, mặc dù chúng cùng tên, nhưng nếu không có @Override thì sẽ không được coi là Overriding method cha. Tuy nhiên vẫn nên dùng @Override để Java có thể check được việc mismatch tên hàm.
+		+ việc class con triển khai code từ các method có ở cha thì sẽ không bắt buộc phải có @Override, mặc dù chúng cùng tên, nhưng nếu không có @Override thì vẫn được coi là Overriding method cha. Tuy nhiên vẫn nên dùng @Override để Java có thể check được việc mismatch tên hàm.
 		+ 1 abstract class vẫn có thể extends 1 class (thông thường) khác, và nó vẫn giữ nguyên các đặc điểm của 1 class con (có thể sử dụng lại các state, method của cha) và mở rộng thêm các method khác 
 		+ không thể new ra 1 object con rồi object đó gọi tới 1 method chỉ có trong class của con mà không có trong class cha. Vì khi compile-time chạy, nó chưa tạo Object với đối tượng con, mà nó đang coi việc tạo object con thông qua cha (Parent child = new Child()) chỉ dừng tới việc Parent child, tức là child sẽ là Object của Parent nên sẽ không thể call method mà không có trong class Parent được. 
 		+ tại sao cần phải là abstract class mà không phải là class thường? 1 class vẫn có thể extends 1 class thường mà?
@@ -150,6 +150,8 @@ Em xin cảm ơn, em xin hết ạ. E mời anh đặt câu hỏi ạ.
 		+ access modifier mặc định luôn là public và là abstract method // những thứ này có sẵn từ khi Java xuất hiện -> những thứ này chẳng khác gì bên abstract method ở abstract class
 			+ Lí do mà access modifier là public vì nó phải được phép gọi tới từ bên ngoài 1 class khác khi các object implements nó được khởi tạo và cần dùng tới các method.
 		+ từ Java 8 trở đi, ngoài abstract ra, còn xuất hiện thêm keyword: default. Với default method, chúng ta có thể tạo body cho các method ngay tại interface, không bị giới hạn như các abstract method của các phiên bản trước đây (không cho phép method có body). Từ đó dẫn tới việc các class implements interface có thể dùng luôn các method này hoặc override nó để phù hợp với class của riêng nó.
+
+		+ interface cho phép implements nhiều interface khác nhau ngay cả khi các interface giống hệt nhau về method, tuy nhiên điều này không có ảnh hưởng gì, vì class nào implements sẽ phải tự triển khai code của riêng nó (cho method đó) nên khi chạy vẫn chỉ là chạy tới method trong class con mà không cần quan tâm method đó đến từ interface nào.
 
 - super:
 	+ con gọi tới constructor tương ứng (cùng các kiểu tham số) của cha
@@ -190,8 +192,8 @@ Em xin cảm ơn, em xin hết ạ. E mời anh đặt câu hỏi ạ.
 				+ nếu không còn chỗ trống -> copy sang mảng mới rồi mới thêm được -> O(n)
 
 			+ remove(index): 
-				+ nếu xoá ở cuổi -> nhảy tới thẳng index đó rồi xoá -> O(n)
-				+ xoá ở chỗ bất kì -> xoá xong rồi phải dịch chuyển lại mảng để không cho phép null ở vị trí phần tử vừa bị xoá
+				+ nếu xoá ở cuổi -> nhảy tới thẳng index đó rồi xoá -> O(1)
+				+ xoá ở chỗ bất kì -> xoá xong rồi phải dịch chuyển lại mảng để không cho phép null ở vị trí phần tử vừa bị xoá -> O(n)
 
 	+ LinkedList: bản chất là double linked list: tức là mỗi phần tử (node) sẽ liên kết tới phần tử ngay phía trước và phía sau nó
 		+ Độ phức tạp:
@@ -201,5 +203,203 @@ Em xin cảm ơn, em xin hết ạ. E mời anh đặt câu hỏi ạ.
 				+ giữa: O(n), mặc dù thêm thì chỉ mất O(1) nhưng thời gian để tới được chỗ cần thêm/xoá thì là O(n)
 
 	+ List: là 1 interface mà cả ArrayList và LinkedList đều implements nó
+	
+
+- List, Set, Map
+	+ List: 
+		+ là 1 Collections (extends Collection)
+		+ lưu dữ liệu theo thứ tự insert
+		+ cho phép trùng lặp giá trị 
+		+ truy cập giá trị bằng index
+
+	+ Set:
+		+ là 1 Collections (extends Collection)
+		+ tập hợp các phần tử duy nhất
+		+ không quan tâm tới thứ tự -> không có index 
+		+ chia thành 3 loại:
+			+ HashSet: 
+				+ không đảm bảo thứ tự
+				+ nhanh nhanh trong 3 loại 
+			+ LinkedHashSet:
+				+ bản chất = LinkedList + HashSet
+				+ giữ được thứ tự insert
+				+ tốc độ trung bình
+			+ TreeSet:
+				+ tự động sắp xếp các phần tử
+				+ chậm nhất trong 3 loại Set
+	+ Map:
+		+ không phải là Collection, nó là cấu trúc mapping Key -> Value
+		+ key là duy nhất, value có thể giống nhau
+		+ chia thành 3 loại giống Set
+
+- Tại sao Collection và Map đều dùng Wrapper Type chứ không phải primitive type?
+	+ Cả Collections và Map đều là Generic class, chúng sử dụng Generic type, mà thiết kế này chỉ sử dụng được với Object chứ không dùng được với kiểu primitive
+		* các Wrapper Type đều là Object: chúng có class của riêng mình, không giống như primitive type (không có class cho bản thân nên không được coi là Object)
+
+- String, StringBuilder, StringBuffer
+	+ String:
+		+ là immutable (bất biến: không thay đổi)
 		+ 
+	+ StringBuilder:
+
+	+ StringBuffer:
+
+- Throwable: lớp cha của tất cả lỗi và ngoại lệ
+	+ chia thành 2 loại
+		+ Error (lỗi):
+
+		+ Exception (ngoại lệ):
+			+ chia thành 2 loại:
+				+ Checked Exception: các lỗi được kiểm tra tại compile-time
+					+ thường là các lỗi có thể dự đoán trước được
+					+ bắt buộc phải xử lí trong try catch, nếu không thì sẽ bị compile error
+				+ Unchecked Exception: các lỗi được kiểm tra lúc runtime
+					+ không dự đoán trước được
+					+ thường là các lỗi liên quan đến logic
+					+ những lỗi này không nên cố xử lí trong try catch vì nó là lỗi logic nên cần phải biết lỗi ở đâu để sửa
+	
+
+- API response trong SpringBoot
+	+ Khi trả ra response cho 1 API (thường thì chúng ta sẽ cấu hình để trả về 1 Object chứa các thông tin như error code, message, data (success), error detail, path, time, ...)
+	+ Sẽ có những field trong Object chúng ta không muốn chúng được trả về cùng với API response (ví dụ: khi có lỗi xảy ra, ta không muốn trả data về, mà thay vào đó là phải trả error detail), nhưng lúc này api sẽ response lại giá trị (data: null) mặc dù ta không set giá trị cho biến này.
+		+ Thực tế, Jackson đã tự động set value cho các field không có giá trị là null và nó sẽ phản hồi ra tất cả các field có trong Object đó	
+		+ Cách khắc phục tình trạng này đó là dùng @JsonInclude(JsonInclude.Include.NON_NULL). Mục đích là để khi field có giá trị null thì sẽ không set vào field để trả ra trong response
+
+
+- Tại sao response DTO lại cần phải có Getter?
+	+ khi service xử lí xong, nó sẽ dùng builder để tạo ra 1 object (Java) 
+	+ controller có thể sẽ return response chứa object đó
+		+ vấn đề là api không biết object java là gì, nó chỉ hiểu JSON format
+		+ vậy nên Jackson phải convert từ Object -> JSON
+			+ quá trình này Jackson cần lấy các thuộc tính của Object để convert 
+				+ THEO MẶC ĐỊNH: Jackson sẽ sử dụng Getter (Java Bean convention) để lấy các giá trị từ object 
+
+
+- Tại sao request DTO cần có cả Getter và Setter?
+	+ request là đầu vào, mà dữ liệu đầu vào nhận được thường là JSON, nhưng khi chúng ta code thì đối tượng làm việc lại là Object nên sẽ cần phải chuyển từ JSON -> Object
+		+ điều này đã được Jackson hỗ trợ, thông thường nó sẽ dùng phương thức Setter để set giá trị từ JSON -> Object
+	+ request DTO cũng cần phải có Getter vì ở Service Layer thường xuyên phải lấy các giá trị từ request để có thể xử lí (ví dụ như việc getPassword() từ request để so sánh với password trong db,..)
+	
+- Reflection trong Java?
+	+ 
+
+- File package.json chứa:
+	+ khai báo thông tin project: (metadata): name, version,...
+	+ quản lí dependencies
+	+ chứa scripts
+
+- File package-lock.json:
+	+ Nếu package.json khai báo các dependency cần thiết cho project thì package-lock.json sẽ lưu lại chính xác version của các dependency và toàn bộ dependency con đã được cài.
+	+ Nhờ đó đảm bảo các môi trường khác nhau (máy dev, server, CI/CD) đều cài cùng một version dependency.
+	+ Nếu không có package-lock.json thì khi chạy npm install ở các thời điểm khác nhau có thể cài các version khác nhau (do dấu ^), dẫn đến lỗi không đồng nhất. 
+		+ Khi có package-lock.json, npm sẽ dựa vào file này để cài đúng các version đã được lock trong file package-json trước đó.
+
+
+├───assets			// chứa tài nguyên tĩnh: ảnh, font, icon. Dùng để import vào components
+├───components		// các UI nhỏ, có thể tái sử dụng (button, input). 
+├───context		// quản lý state global (toàn app)
+├───hooks			// custom React hooks. Giống helper logic, logic nhỏ. Mục đích: tái sử dụng logic (không phải UI)
+├───pages			// mỗi file là 1 màn hình (route). Đại diện cho 1 url
+├───routes			// quản lý routing. Mapping URL <-> page. Dùng react-router-dom. Giống @RequestMapping. Mục đích: tách routing ra khỏi App.js để code clean hơn.
+├───services		// call API (connect backend). Giống Service Layer. Mục đích: tách API ra khỏi UI 
+├───utils			// hàm tiện ích (helpers). Giống utils (java)
+├───App.jsx		// root component. Chứa layout chính, mount routes.
+├───main.jsx		// entry point: điểm bắt đầu chạy app. Giống main() (java). Mục đích: render React vào DOM (index.html) 
+└───index.html 	// nơi react inject vào
+
+- Luồng hoạt động của React:
+	+ index.html -> main.jsx -> App.jsx -> routes/ -> pages/ -> components/ -> services (call API)
+
+- export default xxx: 
+	+ file sẽ mặc định export ra function có tên là xxx	
+- import Abc from "./Xyz":
+	+ file sẽ hiểu: lấy export default từ file ./Xyz và đặt tên cho nó là Abc
+
+
+- <React.StrictMode></React.StrictMode>: 
+	+ là chế độ kiểm tra (dev-only), giúp kiểm tra bug sớm khi code React
+	+ Nó có thể:
+		+ cảnh báo code không an toàn
+		+ phát hiện side-effect sai chỗ
+	+ không bắt buộc phải dùng trong code, nhưng nên dùng để code ổn định hơn
+
+- createContext(): 
+	+ tạo 1 Object Context nhằm chia sẻ dữ liệu (ngữ cảnh) giữa các component cục bộ hoặc có mối quan hệ với nhau mà không cần phải truyền props qua từng cấp độ trung gian (tránh việc props(tham số) drilling)
+	Tức là cho phép các component con dù có ở sâu bao nhiêu trong cây component vẫn có thể truy cập được dữ liệu trong component cha ở cấp cao nhất 
+	+ trả về 1 đối tượng chứa Provider và Consumer
+
+- useState():
+	+ cho phép các function lưu trữ, quản lý dữ liệu nội bộ (state)
+	+ tự động cập nhật lại giao diện (re-render) khi dữ liệu thay đổi 
+	+ biến sẽ không bị khởi tạo lại mỗi khi component re-render, đảm bảo dữ liệu được nhất quán 
+	+ cú pháp: 
+		const [state, setState] = useState(initialValue);
+		
+		+ state: Giá trị hiện tại của state.
+		+ setState: Hàm dùng để cập nhật giá trị mới và báo cho React re-render.
+		+ initialValue: Giá trị khởi tạo của state (chỉ dùng trong lần render đầu tiên)
+
+- <BrowserRouter></BrowserRouter>
+	+ đọc URL trên trình duyệt (giữ cho URL và UI khớp với nhau)
+	+ quyết định route nào được active
+	+ nếu không có nó thì <Routes></Routes> sẽ bị lỗi 
+
+- Dùng e.preventDefault() khi submit form:
+	+ Mặc định xử lí của trình duyệt khi submit form là gửi request -> reload lại toàn bộ page, xoá hết state -> re-render page từ đầu (HTML từ server) 
+	+ Điều này gây hại khi sử dụng React:
+		+ Phá vỡ nguyên tắc của React (state thay đổi -> re-render component). Nhưng khi reload thì mọi thứ được useState(""), React mất quyền kiểm soát
+		+ UX tệ:
+			+ Khi nhập sai thông tin thì page sẽ reload, phải nhập lại mọi thứ từ đầu vì mọi state đã bị xoá
+			+ 
+
+- Khi validation bên BE bắt lỗi, nó sẽ bắt được và trả ra toàn bộ lỗi của 1 field.
+
+- ESLint là tool dùng để:
+	+ bắt lỗi sai cú pháp
+	+ ép code style
+	+ giữ code đồng nhất trong team
+
+- File eslint.config.js:
+	+ là file config của ESLint
+	+ chứa:
+		+ quy tắc linting
+		+ môi trường (browser, node)
+		+ plugin
+		+ rule custom của team
+
+- AxiosError: 1 class lỗi của Axios. Khi HTTP không return về status dạng 2xx thì Axios sẽ ném ra lỗi này.
+
+- Trong class AxiosError, có 1 số field quan trọng:
+	+ response: chứa toàn bộ response từ BE
+		+ data: chứa toàn bộ thông tin API response 
+			+ errors: (field này có thể thay đổi phụ thuộc vào tên field bên BE): chứa toàn bộ các lỗi được BE trả về 
+			+ chứa luôn cả data (field) ở BE phản hồi 
+		
+- axios:
+	+ gọi tới các API backend rồi nhận về response
+	+ được thiết kế: status >= 200 && status <= 300 -> resolve
+	+ còn lại được coi là lỗi (dùng catch để bắt)
+
+- JWT:
+	+ cơ chế xác thực và truyền thông tin an toàn giữa client và server
+	+ s
+- jwt stateless:
+	+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
