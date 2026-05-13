@@ -756,16 +756,233 @@
                 <li>còn lại được coi là lỗi (dùng catch để bắt)</li>
             </ul>
         </section>
+        <hr>
+    </article>
+
+    <article>
+
+        <section>
+            <h2>JWT:</h2>
+            <ul>
+                <li>cơ chế xác thực và truyền thông tin an toàn giữa client và server</li>
+                <li>là chuỗi dữ liệu gồm 3 phần:
+                    <ul>
+                        <li><code>HEADER</code>: thuật toán mã hoá</li>
+                        <li><code>PAYLOAD</code>: dữ liệu chính</li>
+                        <li><code>SIGNATURE</code>: chữ kí</li>
+                    </ul>
+                </li>
+                <li>cách tạo token:
+                    <ul>
+                        <li>khi user đăng nhập vào hệ thống:
+                            <ul>
+                                <li>server tạo jwt
+                                    <ul>
+                                        <li><code>HEADER</code>: chứa thông tin metadata (thuật toán, kiểu bảo mật)</li>
+                                        <li><code>PAYLOAD</code>: thông tin người dùng</li>
+                                        <li><code>SIGNATURE</code>: tạo ra bằng các thuật toán mã hoá (dùng dữ liệu của <code>HEADER</code> và <code>PAYLOAD</code> làm đối số) và secret key</li>
+                                    </ul>
+                                </li>
+                                <li>server encode <code>HEADER</code> và <code>PAYLOAD</code> để ghép với chuỗi ở <code>SIGNATURE</code> -> token
+                                    <ul>
+                                        <li>encode: dùng base64Url, không dùng encrypt -> ai cũng có thể decode để đọc thông tin -> không được để thông tin nhạy cảm vào <code>PAYLOAD</code></li>
+                                    </ul>
+                                </li>
+                                <li>server trả token cho client</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>cách xác minh JWT:
+                    <ul>
+                        <li>client gửi request kèm token lên server
+                            <ul>
+                                <li>server tách lấy phần <code>SIGNATURE</code> của token</li>
+                                <li>server tự tính lại <code>SIGNATURE</code> bằng thuật toán và secret key</li>
+                                <li>compare <code>SIGNATURE</code> tính được với <code>SIGNATURE</code> gửi lên từ client</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
 
         <hr>
 
         <section>
-            <h2>JWT</h2>
-            <p>Cơ chế xác thực và truyền thông tin an toàn giữa client và server.</p>
-            <h3>JWT stateless</h3>
+            <h2>refresh token:</h2>
+            <ul>
+                <li>là 1 loại token (giống với access token) dùng để lấy access token mới khi access token cũ hết hạn mà không cần user đăng nhập lại</li>
+                <li>trong hệ thống JWT có 2 loại token:
+                    <ul>
+                        <li><strong>access token:</strong>
+                            <ul>
+                                <li>thời gian sống ngắn (10 - 15 phút)</li>
+                                <li>dùng để call API</li>
+                            </ul>
+                        </li>
+                        <li><strong>refresh token:</strong>
+                            <ul>
+                                <li>thời gian sống dài (vài ngày -> vài tuần)</li>
+                                <li>dùng để xin access token mới</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>cách hoạt động:
+                    <ul>
+                        <li>khi access token hết hạn, client gửi refresh token lên server</li>
+                        <li>server verify refresh token</li>
+                        <li>nếu hợp lệ -> cấp access token mới</li>
+                    </ul>
+                </li>
+                <li>bản chất:
+                    <ul>
+                        <li>khi user đăng nhập, server cũng trả về refresh token cho client giữ (cùng với access token)</li>
+                    </ul>
+                </li>
+                <li>cách tạo refresh token:
+                    <ul>
+                        <li>cách 1: tạo giống access token (nhưng có expire lâu hơn)</li>
+                        <li>cách 2: random String rồi lưu vào DB</li>
+                    </ul>
+                </li>
+                <li>tại sao cần phải có refresh token:
+                    <ul>
+                        <li>nếu không có refresh token mà muốn phiên đăng nhập của user được lâu thì access token phải có thời gian sống dài</li>
+                        <li>tuy nhiên: nếu dùng access token thì server không quản lí được vì là JWT stateless
+                            <ul>
+                                <li>nên nếu bị lộ access token thì hacker có thể toàn quyền sử dụng account trong khoảng thời gian access token sống -> phải giảm thời gian sống của access token xuống -> user bị hết phiên đăng nhập liên tục -> UX không tốt</li>
+                            </ul>
+                        </li>
+                        <li>refresh token giải quyết được vấn trên:
+                            <ul>
+                                <li>khi access token hết hạn, client gửi request kèm refresh token lên server</li>
+                                <li>server verify refresh token, nếu OK -> cấp access token mới, vẫn giữ được phiên đăng nhập của người dùng</li>
+                                <li>bên cạnh đó, có thể quản lí được refresh token thông qua DB nên tính bảo mật được tăng lên</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>thời hạn của token</h2>
+            <ul>
+                <li>dạng access token (refresh token): expire được lưu trong <code>PAYLOAD</code></li>
+                <li>random String: lưu expire vào 1 cột trong DB</li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>revoked token (thu hồi token):</h2>
+            <ul>
+                <li>khi user login, server cấp cho refresh token. Token khi này sẽ được đánh dấu <code>revoked = false</code> (tức là chưa thu hồi)</li>
+                <li>khi user logout, server sẽ đánh dấu <code>revoked = true</code> (đã thu hồi)</li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>jwt stateful (đầy đủ, truyền thống):</h2>
+            <ul>
+                <li>user login -> server tạo session</li>
+                <li>lưu session đó vào memory/DB/Redis</li>
+                <li>trả cho client <code>JSESSIONID</code></li>
+                <li>mọi request của client đều gửi kèm <code>JSESSIONID</code></li>
+                <li>server tra cứu <code>JSESSIONID</code> để biết client gửi là ai</li>
+            </ul>
+            <p>-> server phải lưu sessionId (user, role, permission, ...) -> full state of client</p>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>jwt stateless (không trạng thái, hiện đại):</h2>
+            <ul>
+                <li>user login -> tạo JWT (chứa các thông tin của user)</li>
+                <li>trả JWT cho client</li>
+                <li>mọi request từ client đều được gửi kèm JWT</li>
+                <li>server nhận token -> verify <code>SIGNATURE</code> -> đọc <code>PAYLOAD</code></li>
+            </ul>
+            <p>-> server không cần lưu gì (sessionId, login state, ...) -> less state</p>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>package org.springframework.security.core.userdetails có public interface UserDetailsService:</h2>
+            <ul>
+                <li>có 1 method duy nhất <code>UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;</code></li>
+                <li>dùng để load thông tin người dùng từ DB và lưu vào Spring Security Context</li>
+                <li><em>vì đây là interface nên cần phải có 1 class implements và triển khai method kia</em></li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>Spring Security:</h2>
+            <ul>
+                <li>là framework tổng quát được thiết kế để hoạt động với mọi hệ thống (user lưu trữ trong MySQL, PostgreSQL,... )</li>
+                <li>nó không biết model entity (nghiệp vụ hệ thống) -> không thể xử lí thông qua các entity này</li>
+                <li>Spring Security cần 1 ngôn ngữ chung</li>
+                <li>đó là <code>UserDetails</code> và <code>UserDetailsService</code>
+                    <ul>
+                        <li>chức năng duy nhất của <code>UserDetailsService</code> là lấy thông tin User thông qua username rồi load thông tin đó vào <code>UserDetails</code> bằng method <code>loadUserByUsername</code>
+                            <ul>
+                                <li>mặc dù khi triển khai method <code>loadUserByUsername</code>, ta vẫn load thông tin của User lên thông qua <code>userRepository</code>, nhưng cuối cùng ta vẫn phải convert nó sang dạng của <code>UserDetails</code> để return</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>public interface GrantedAuthority:</h2>
+            <ul>
+                <li>là interface đại diện cho quyền hạn trong Spring Security</li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>SimpleGrantedAuthority:</h2>
+            <ul>
+                <li>là 1 kế thừa của interface <code>GrantedAuthority</code></li>
+            </ul>
+        </section>
+
+        <hr>
+
+        <section>
+            <h2>Debug:</h2>
+            <ul>
+                <li><strong>step into:</strong>
+                    <ul>
+                        <li>nhảy vào trong</li>
+                        <li>trong khi debug, nếu line hiện tại đang call tới 1 method khác, dùng step into sẽ nhảy sang method kia để tiếp tục debug</li>
+                    </ul>
+                </li>
+                <li><strong>step over:</strong>
+                    <ul>
+                        <li>nhảy qua</li>
+                        <li>trong khi debug, nếu line hiện tại đang call tới 1 method khác, dùng step over sẽ bỏ qua việc debug trong method được gọi tới, mà nó trả luôn ra kết quả của method kia xử lí</li>
+                    </ul>
+                </li>
+            </ul>
         </section>
 
     </article>
-
 </body>
 </html>
